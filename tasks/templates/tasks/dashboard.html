@@ -1,0 +1,226 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>My Dashboard</h2>
+        <p class="text-muted">Manage your daily productivity</p>
+    </div>
+
+    <a href="{% url 'add_task' %}" class="btn btn-primary">
+        + Add New Task
+    </a>
+</div>
+
+<!-- Statistics -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h6 class="text-muted">Total Tasks</h6>
+            <h2>{{ total }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h6 class="text-muted">Completed</h6>
+            <h2 class="text-success">{{ completed }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h6 class="text-muted">Pending</h6>
+            <h2 class="text-danger">{{ pending }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Productivity Progress -->
+
+<div class="card p-4 mb-4">
+
+    <h4>Productivity Progress</h4>
+
+    <div class="d-flex justify-content-between mb-2">
+        <span>Task Completion</span>
+        <strong>{{ percentage }}%</strong>
+    </div>
+
+    <div class="progress" style="height: 15px;">
+        <div class="progress-bar bg-success"
+             role="progressbar"
+             style="width: {{ percentage }}%;"
+             aria-valuenow="{{ percentage }}"
+             aria-valuemin="0"
+             aria-valuemax="100">
+        </div>
+    </div>
+
+</div>
+
+<!-- Priority Overview -->
+
+<div class="card p-4 mb-4">
+
+    <h4 class="mb-3">Priority Overview</h4>
+
+    <div class="row text-center">
+
+        <div class="col-md-4">
+            <h5 class="text-danger">High</h5>
+            <h3>{{ high }}</h3>
+        </div>
+
+        <div class="col-md-4">
+            <h5 class="text-warning">Medium</h5>
+            <h3>{{ medium }}</h3>
+        </div>
+
+        <div class="col-md-4">
+            <h5 class="text-success">Low</h5>
+            <h3>{{ low }}</h3>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Doughnut Chart -->
+
+<div class="card p-4 mb-4">
+
+    <h4 class="mb-3">Task Priority Distribution</h4>
+
+    <div style="max-width: 350px; margin: auto;">
+        <canvas id="priorityChart"></canvas>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('priorityChart');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+
+            datasets: [{
+                label: 'Number of Tasks',
+
+                data: [
+                    {{ high }},
+                    {{ medium }},
+                    {{ low }}
+                ],
+
+                backgroundColor: [
+                    '#dc3545',
+                    '#ffc107',
+                    '#198754'
+                ],
+
+                borderWidth: 2
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+
+<!-- Task List -->
+
+<div class="card p-4">
+
+    <h4 class="mb-3">My Tasks</h4>
+
+    {% for task in tasks %}
+
+        <div class="border rounded p-3 mb-3">
+
+            <div class="d-flex justify-content-between flex-wrap">
+
+                <div>
+                    <h5>{{ task.title }}</h5>
+
+                    <p class="text-muted mb-1">
+                        {{ task.description }}
+                    </p>
+
+                    <small>
+                        Priority: <strong>{{ task.priority }}</strong>
+                    </small>
+
+                    <br>
+
+                    <small>
+                        Due Date: {{ task.due_date|default:"Not set" }}
+                    </small>
+
+                    <br>
+
+                    <span class="badge {% if task.status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                        {{ task.status }}
+                    </span>
+                </div>
+
+                <div class="mt-2">
+
+                    <form method="POST" action="{% url 'toggle_task' task.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-success">
+                            {% if task.status == 'Pending' %}
+                                Complete
+                            {% else %}
+                                Reopen
+                            {% endif %}
+                        </button>
+                    </form>
+
+                    <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-primary">
+                        Edit
+                    </a>
+
+                    <form method="POST" action="{% url 'delete_task' task.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-danger">
+                            Delete
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <p class="text-center text-muted">
+            No tasks available. Start by adding your first task!
+        </p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

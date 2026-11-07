@@ -1,0 +1,45 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="card p-4">
+
+            <h2 class="mb-4">
+                {% if editing %}
+                    Edit Task
+                {% else %}
+                    Create New Task
+                {% endif %}
+            </h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Task Details</label>
+                    {{ form.as_p }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    {% if editing %}
+                        Update Task
+                    {% else %}
+                        Save Task
+                    {% endif %}
+                </button>
+
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
