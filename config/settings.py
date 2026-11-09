@@ -21,13 +21,17 @@ load_dotenv(BASE_DIR / '.env')
 
 
 
-SECRET_KEY = 'django-insecure-jkhj0#o7oit$&r1q#8y&t*ps+1q=dey4#jchtly90s%!^w06if'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
+ALLOWED_HOSTS = os.getenv(
+     
+    'ALLOWED_HOSTS',
+    'localhost,127.0.0.1,testserver'
+).split(',')
 
-
+print("ALLOWED HOSTS:", ALLOWED_HOSTS)
 
 
 INSTALLED_APPS = [
