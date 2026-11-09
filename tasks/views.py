@@ -1,10 +1,12 @@
-
+from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from .models import Task
-from .forms import TaskForm
+from .forms import CustomUserCreationForm
+from .forms import TaskForm, CustomUserCreationForm
+
 
 
 @login_required
@@ -94,15 +96,38 @@ def edit_task(request, task_id):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
 
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('dashboard')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, 'tasks/register.html', {
         'form': form
     })
+
+@login_required
+def delete_account(request):
+
+    if request.method == 'POST':
+
+        password = request.POST.get('password','')
+
+        if request.user.check_password(password):
+
+            user = request.user
+
+            logout(request)
+            user.delete()
+
+            return redirect('login')
+
+        else:
+            return render(request, 'tasks/delete_account.html', {
+                'error': 'Incorrect password. Please try again.'
+            })
+
+    return render(request, 'tasks/delete_account.html')

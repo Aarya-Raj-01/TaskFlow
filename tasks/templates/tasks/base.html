@@ -1,42 +1,167 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow - Productivity Manager</title>
+
+    <title>TaskFlow | Productivity Manager</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            background: #f4f6fb;
-            font-family: Arial, sans-serif;
+        :root {
+            --primary: #8064d8;
+            --primary-dark: #6849c4;
+            --lavender: #eee9ff;
+            --background: #f8f7fc;
+            --text-dark: #29243d;
+            --text-muted: #88839a;
         }
 
+        body {
+            background: var(--background);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        
+
         .navbar {
-            background: #26345f;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 16px 0;
+            box-shadow: 0 2px 15px rgba(60, 40, 100, 0.06);
         }
 
         .navbar-brand {
-            color: white;
-            font-weight: bold;
-            font-size: 24px;
+            color: var(--primary) !important;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
-        .main-container {
-            max-width: 1100px;
-            margin: 40px auto;
+        .brand-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--lavender);
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            margin-right: 7px;
         }
 
-        .card {
-            border: none;
-            border-radius: 14px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        .navbar-user {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-right: 15px;
         }
+
+        
 
         .btn-primary {
-            background: #5268c9;
+            background: var(--primary);
             border: none;
+            border-radius: 9px;
+            padding: 9px 18px;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+            border-radius: 9px;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-light {
+            border-radius: 9px;
+            font-weight: 600;
+        }
+
+        .btn-outline-danger {
+            border-radius: 9px;
+        }
+
+        
+
+        .main-container {
+            max-width: 1200px;
+            margin: 38px auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        
+
+        .card {
+            border: 1px solid #f0edf7;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 4px 18px rgba(66, 45, 110, 0.05);
+        }
+
+        .card:hover {
+            box-shadow: 0 7px 22px rgba(66, 45, 110, 0.09);
+        }
+
+       
+
+        .form-control,
+        .form-select {
+            border: 1px solid #e5e0f0;
+            border-radius: 9px;
+            padding: 11px 13px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(128, 100, 216, 0.12);
+        }
+
+        
+
+        a {
+            color: var(--primary);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        
+
+        @media (max-width: 576px) {
+            .main-container {
+                margin: 22px auto;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .navbar-brand {
+                font-size: 22px;
+            }
+
+            .navbar-user {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -45,29 +170,66 @@
 
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="/">TaskFlow</a>
 
-        <div class="ms-auto">
+        <a class="navbar-brand" href="/">
+            <span class="brand-icon">
+                <i class="bi bi-check2-circle"></i>
+            </span>
+            TaskFlow
+        </a>
+
+        <div class="ms-auto d-flex align-items-center">
+
             {% if user.is_authenticated %}
-                <span class="text-white me-3">
+
+                <span class="navbar-user">
+                    <i class="bi bi-person-circle me-1"></i>
                     Hello, {{ user.username }}
                 </span>
 
-                <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                <a href="{% url 'delete_account' %}"
+                   class="btn btn-outline-danger btn-sm me-2">
+                    <i class="bi bi-person-x"></i>
+                    Delete Account
+                </a>
+
+                <form method="POST"
+                      action="{% url 'logout' %}"
+                      class="d-inline">
+
                     {% csrf_token %}
-                    <button class="btn btn-light btn-sm">Logout</button>
+
+                    <button type="submit"
+                            class="btn btn-primary btn-sm">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </button>
+
                 </form>
+
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-light btn-sm">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-warning btn-sm">Register</a>
+
+                <a href="{% url 'login' %}"
+                   class="btn btn-outline-primary btn-sm me-2">
+                    Login
+                </a>
+
+                <a href="{% url 'register' %}"
+                   class="btn btn-primary btn-sm">
+                    Get Started
+                </a>
+
             {% endif %}
+
         </div>
     </div>
 </nav>
 
 <div class="container main-container">
+
     {% block content %}
     {% endblock %}
+
 </div>
 
 </body>
